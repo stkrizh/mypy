@@ -637,9 +637,9 @@ class DataFileCollector(pytest.Collector):
     parent: DataSuiteCollector
 
     @classmethod  # We have to fight with pytest here:
-    def from_parent(  # type: ignore[override]
+    def from_parent(
         cls,
-        parent: DataSuiteCollector,
+        parent: DataSuiteCollector,  # type: ignore[override]
         *,
         name: str,
     ) -> 'DataFileCollector':

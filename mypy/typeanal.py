@@ -312,7 +312,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
                 instance = self.named_type('builtins.tuple', [self.anal_type(t.args[0])])
                 instance.line = t.line
                 return instance
-            return self.tuple_type(self.anal_array(t.args))
+            return self.tuple_type(self.anal_array(t.args), line=t.line, column=t.column)
         elif fullname == 'typing.Union':
             items = self.anal_array(t.args)
             return UnionType.make_union(items)
@@ -1085,9 +1085,10 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         return Instance(node.node, args or [any_type] * len(node.node.defn.type_vars),
                         line=line, column=column)
 
-    def tuple_type(self, items: List[Type]) -> TupleType:
+    def tuple_type(self, items: List[Type], line: int = -1, column: int = - 1) -> TupleType:
         any_type = AnyType(TypeOfAny.special_form)
-        return TupleType(items, fallback=self.named_type('builtins.tuple', [any_type]))
+        return TupleType(items, fallback=self.named_type('builtins.tuple', [any_type]),
+                         line=line, column=column)
 
 
 TypeVarLikeList = List[Tuple[str, TypeVarLikeExpr]]

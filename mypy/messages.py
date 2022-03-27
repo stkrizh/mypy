@@ -875,9 +875,11 @@ class MessageBuilder:
                                  allow_dups=allow_dups, code=code)
 
     def argument_incompatible_with_supertype(
-            self, arg_num: int, name: str, type_name: Optional[str],
+            self, arg_num: int, name: str, arg_type: Type, type_name: Optional[str],
             name_in_supertype: str, arg_type_in_supertype: Type, supertype: str,
             context: Context) -> None:
+        if arg_type.line != -1:
+            context.set_line(arg_type)
         target = self.override_target(name, name_in_supertype, supertype)
         arg_type_in_supertype_f = format_type_bare(arg_type_in_supertype)
         self.fail('Argument {} of "{}" is incompatible with {}; '

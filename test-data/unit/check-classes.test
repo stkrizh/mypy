@@ -323,6 +323,55 @@ main:7: note: This violates the Liskov substitution principle
 main:7: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
 main:9: error: Return type "object" of "h" incompatible with return type "A" in supertype "A"
 
+[case testMethodOverridingWithIncompatibleTypesMultiline1]
+class A:
+  def f(self, a: int, b: str, c: float, d: str, e: bool) -> None: pass
+class B(A):
+  def f(
+    self,
+    a: int,
+    b: str,
+    c: bool,  \
+      # E: Argument 3 of "f" is incompatible with supertype "A"; supertype defines the argument type as "float" \
+      # N: This violates the Liskov substitution principle \
+      # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+    d: str,
+    e: bool,
+  ) -> None:
+    pass
+
+[case testMethodOverridingWithIncompatibleTypesMultiline2]
+from typing import Generic, Tuple, TypeVar
+T = TypeVar('T')
+class A(Generic[T]):
+  def f(self, a: int, b: Tuple[T, T]) -> None: pass
+class B(A[int]):
+  def f(
+    self,
+    a: int,
+    b: Tuple[()], \
+      # E: Argument 2 of "f" is incompatible with supertype "A"; supertype defines the argument type as "Tuple[int, int]" \
+      # N: This violates the Liskov substitution principle \
+      # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+  ) -> None:
+    pass
+[builtins fixtures/tuple.pyi]
+
+[case testMethodOverridingWithIncompatibleTypesMultiline3]
+from typing import Optional
+class A():
+  def f(self, a: Optional[int], b: int) -> None: pass
+class B(A):
+  def f(
+    self,
+    a: Optional[str], \
+      # E: Argument 1 of "f" is incompatible with supertype "A"; supertype defines the argument type as "Optional[int]" \
+      # N: This violates the Liskov substitution principle \
+      # N: See https://mypy.readthedocs.io/en/stable/common_issues.html#incompatible-overrides
+    b: int,
+  ) -> None:
+    pass
+
 [case testEqMethodsOverridingWithNonObjects]
 class A:
   def __eq__(self, other: A) -> bool: pass  # Fail

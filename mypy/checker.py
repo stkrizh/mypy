@@ -1714,12 +1714,13 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                     return erase_typevars(t, ids_to_erase=override_ids)
 
                 for i in range(len(override.arg_types)):
-                    if not is_subtype(original.arg_types[i],
-                                      erase_override(override.arg_types[i])):
-                        arg_type_in_super = original.arg_types[i]
+                    arg_type = erase_override(override.arg_types[i])
+                    arg_type_in_super = original.arg_types[i]
+                    if not is_subtype(arg_type_in_super, arg_type):
                         self.msg.argument_incompatible_with_supertype(
                             i + 1,
                             name,
+                            arg_type,
                             type_name,
                             name_in_super,
                             arg_type_in_super,
